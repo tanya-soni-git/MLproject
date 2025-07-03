@@ -5,10 +5,10 @@ import pickle
 app = Flask(__name__)
 
 # Load your trained model and preprocessor
-model = pickle.load(open('artifacts/model.pkl', 'rb'))
-preprocessor = pickle.load(open('artifacts/preprocessor.pkl', 'rb'))
+model = pickle.load(open('artifacts/models.pkl', 'rb'))
+preprocessor = pickle.load(open('artifacts/proprocessor.pkl', 'rb'))
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET']) 
 def home():
     return render_template('home.html')
 
