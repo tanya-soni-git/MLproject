@@ -1,41 +1,45 @@
-from flask import Flask,request,render_template
-import numpy as np
+from flask import Flask, request, render_template
 import pandas as pd
+import pickle
 
-from sklearn.preprocessing import StandardScaler
-from src.pipeline.predict_pipeline import CustomData,PredictPipeline
-application=Flask(__name__)
+app = Flask(__name__)
 
-app=application
+# Load your trained model and preprocessor
+model = pickle.load(open('artifacts/model.pkl', 'rb'))
+preprocessor = pickle.load(open('artifacts/preprocessor.pkl', 'rb'))
 
-##Route for a home page
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('home.html')
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/predictdata', methods=['GET','POST'])
+@app.route('/predictdata', methods=['POST'])
 def predict_datapoint():
-    if request.method=='GET':
-        return render_template('home.html')
-    else:
-        data=CustomData(
-            gender=request.form.get('gender'),
-            race_ethnicity = request.form.get('race/ethnicity'),
-            parental_level_of_education = request.form.get('parental level of education'),
-            lunch=request.form.get('lunch'),
-            test_preparation_course=request.form.get('test preparation course'),
-            reading_score=request.form.get('reading score'),
-            writing_score=request.form.get('writing score'),
+    if request.method == 'POST':
+        # Get form data
+        gender = request.form['gender']
+        ethnicity = request.form['ethnicity']
+        parental_education = request.form['parental_level_of_education']
+        lunch = request.form['lunch']
+        test_course = request.form['test_preparation_course']
+        reading_score = float(request.form['reading_score'])
+        writing_score = float(request.form['writing_score'])
 
+        # Create DataFrame from input
+        input_df = pd.DataFrame([{
+            'gender': gender,
+            'race/ethnicity': ethnicity,
+            'parental level of education': parental_education,
+            'lunch': lunch,
+            'test preparation course': test_course,
+            'reading score': reading_score,
+            'writing score': writing_score
+        }])
 
-        )
-        pred_df=data.get_data_as_data_frame()
-        print(pred_df)
+        # Transform input and predict
+        transformed_input = preprocessor.transform(input_df)
+        result = model.predict(transformed_input)[0]
 
-        predict_pipeline=PredictPipeline()
-        results=predict_pipeline.predict(pred_df)
-        return render_template('home.html',results=results[0])
-    
+        return render_template('home.html', results=result)
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
+    app.run(debug=True, host="0.0.0.0")
