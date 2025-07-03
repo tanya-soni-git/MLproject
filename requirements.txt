@@ -6,5 +6,7 @@ scikit-learn
 catboost
 xgboost
 Flask
+joblib
+gunicorn
 dill
 #-e .
