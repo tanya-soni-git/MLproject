@@ -12,7 +12,7 @@ An end-to-end machine learning web application that predicts a student’s **mat
 - 🖥 **Flask** – Backend web framework
 - 💡 **HTML + Bootstrap** – UI Form for live predictions
 - 🐳 **Docker** – Containerized deployment
-- ☁️ **Render** – Cloud platform for hosting
+- ☁️ **Render** – Cloud platform for hosting.
 
 ---
 
